@@ -35,14 +35,6 @@ android {
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
         
         ndkVersion "27.2.12479018"
-
-        externalNativeBuild {
-            cmake {
-                version '3.22.1'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
-                targets 'tmessages.49'
-            }
-        }
     }
 
     buildFeatures {
