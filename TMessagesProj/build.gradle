@@ -104,7 +104,7 @@ dependencies {
 }
 
 android {
-    compileSdk 34
+    compileSdk 36
     namespace 'com.pluschat.messenger'
 
     defaultConfig {
