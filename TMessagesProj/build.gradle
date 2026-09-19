@@ -88,11 +88,6 @@ dependencies {
         exclude group: 'ru.noties', module: 'jlatexmath-android'
     }
 
-    api project(":TMessagesProj_Modules:media3:media-lib-exoplayer")
-    api project(":TMessagesProj_Modules:media3:media-lib-exoplayer-dash")
-    api project(":TMessagesProj_Modules:media3:media-lib-exoplayer-hls")
-    api project(":TMessagesProj_Modules:media3:media-lib-decoder-ffmpeg")
-    api project(":TMessagesProj_Modules:media3:media-lib-session")
     api project(':jlatexmath')
 
 //    implementation 'com.google.mlkit:translate:17.0.3'
