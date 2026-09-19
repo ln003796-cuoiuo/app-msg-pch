@@ -1,6 +1,5 @@
 apply plugin: 'com.android.application'
 apply plugin: 'com.huawei.agconnect'
-apply plugin: 'org.telegram.build-app-plugin'
 
 repositories {
     mavenCentral()

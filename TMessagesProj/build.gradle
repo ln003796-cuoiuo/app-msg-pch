@@ -106,11 +106,40 @@ dependencies {
 }
 
 android {
-    // 1. Единые настройки SDK и Namespace
-    namespace 'com.pluschat.messenger'
     compileSdk 34
-    buildToolsVersion '34.0.0' // Лучше использовать стабильную 34, если 36 еще нет в окружении runner
-    ndkVersion "27.2.12479018"
+    namespace 'com.pluschat.messenger'
+
+    defaultConfig {
+        minSdk 21
+        targetSdk 34
+        versionCode 490
+        versionName "10.5.2"
+        
+        vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
+        multiDexEnabled true
+
+        externalNativeBuild {
+            cmake {
+                version '3.22.1'
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21'
+                targets 'tmessages.49'
+            }
+        }
+        
+        // Заглушки для переменных, если они не определены в gradle.properties
+        buildConfigField "String", "APP_VERSION_NAME", "\"10.5.2\""
+        buildConfigField "int", "VERSION_NUM", "490"
+    }
+
+    buildFeatures {
+        buildConfig = true
+    }
+
+    compileOptions {
+        sourceCompatibility JavaVersion.VERSION_1_8
+        targetCompatibility JavaVersion.VERSION_1_8
+        coreLibraryDesugaringEnabled true
+    }
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
 
@@ -126,125 +155,27 @@ android {
         disable 'BlockedPrivateApi'
     }
 
-    compileOptions {
-        sourceCompatibility JavaVersion.VERSION_1_8
-        targetCompatibility JavaVersion.VERSION_1_8
-        coreLibraryDesugaringEnabled true
-    }
-
-    // 2. Вынесли buildFeatures НАВЕРХ (вне defaultConfig)
-    buildFeatures {
-        buildConfig = true
-        renderScript = false
-        resValues = false
-        shaders = false
-    }
-
-    defaultConfig {
-        // Оставляем только настройки конфигурации, версии уже заданы выше
-        minSdk 24 
-        targetSdk 34
-        versionCode 1
-        versionName "1.0"
-
-        vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
-        multiDexEnabled true
-
-        externalNativeBuild {
-            cmake {
-                version '3.22.1'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-24'
-                targets 'tmessages.49'
-            }
-        }
-        
-        // Временная заглушка для переменных, если они не объявлены в settings.gradle
-        // Если сборка ругается на APP_VERSION_NAME, раскомментируй строки ниже:
-        // buildConfigField "String", "APP_VERSION_NAME", "\"1.0\""
-    }
-
     buildTypes {
         debug {
             jniDebuggable true
             shrinkResources false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            // Заглушки для переменных, чтобы сборка не падала
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
-            buildConfigField "String", "BETA_URL", "\"\""
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"10.5.2\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
-            buildConfigField "boolean", "BUNDLE", "false"
-            buildConfigField "int", "VERSION_NUM", "0"
         }
-
-        HA_private {
-            matchingFallbacks = ['release']
-            jniDebuggable false
-            multiDexEnabled true
-            ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
-            buildConfigField "String", "BETA_URL", "\"\""
-            buildConfigField "boolean", "DEBUG_VERSION", "true"
-            buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
-            buildConfigField "boolean", "BUNDLE", "false"
-            buildConfigField "int", "VERSION_NUM", "1"
-        }
-
-        HA_public {
-            matchingFallbacks = ['release']
-            jniDebuggable false
-            multiDexEnabled true
-            ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
-            buildConfigField "String", "BETA_URL", "\"\""
-            buildConfigField "boolean", "DEBUG_VERSION", "true"
-            buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
-            buildConfigField "boolean", "BUNDLE", "false"
-            buildConfigField "int", "VERSION_NUM", "4"
-        }
-
-        HA_hardcore {
-            matchingFallbacks = ['release']
-            jniDebuggable false
-            multiDexEnabled true
-            ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
-            buildConfigField "String", "BETA_URL", "\"\""
-            buildConfigField "boolean", "DEBUG_VERSION", "true"
-            buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
-            buildConfigField "boolean", "BUNDLE", "false"
-            buildConfigField "int", "VERSION_NUM", "5"
-        }
-
-        standalone {
-            matchingFallbacks = ['release']
-            jniDebuggable false
-            multiDexEnabled true
-            ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
-            buildConfigField "String", "BETA_URL", "\"\""
-            buildConfigField "boolean", "DEBUG_VERSION", "false"
-            buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
-            buildConfigField "boolean", "BUNDLE", "false"
-            buildConfigField "int", "VERSION_NUM", "6"
-        }
-
         release {
             jniDebuggable false
             shrinkResources false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
-            buildConfigField "String", "BETA_URL", "\"\""
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"10.5.2\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
-            buildConfigField "boolean", "BUNDLE", "false"
-            buildConfigField "int", "VERSION_NUM", "7"
         }
+        // Остальные типы сборки (HA_private и т.д.) можно закомментировать или удалить для первой сборки
     }
-    
-    // Удалили дубликат namespace в конце
 }
 
 
