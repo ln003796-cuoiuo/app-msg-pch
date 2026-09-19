@@ -109,7 +109,6 @@ android {
 
     defaultConfig {
         minSdk 21
-        targetSdk 34
         versionCode 490
         versionName "10.5.2"
         

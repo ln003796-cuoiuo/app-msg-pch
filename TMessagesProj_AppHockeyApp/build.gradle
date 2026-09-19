@@ -34,7 +34,6 @@ android {
     defaultConfig {
         applicationId "com.pluschat.messenger.beta"
         minSdk 21
-        targetSdk 34
         versionCode 490
         versionName "10.5.2"
         multiDexEnabled true
