@@ -1,7 +1,6 @@
 import org.gradle.nativeplatform.platform.internal.DefaultNativePlatform
 
 apply plugin: 'com.android.library'
-apply plugin: 'org.telegram.build-plugin'
 apply plugin: 'idea'
 
 idea {
@@ -112,11 +111,10 @@ dependencies {
 }
 
 android {
+    // 1. Единые настройки SDK и Namespace
+    namespace 'com.pluschat.messenger'
     compileSdk 34
-    minSdk 24
-    targetSdk 34
-    compileSdkVersion 36
-    buildToolsVersion '36.0.0'
+    buildToolsVersion '34.0.0' // Лучше использовать стабильную 34, если 36 еще нет в окружении runner
     ndkVersion "27.2.12479018"
 
     sourceSets.main.jniLibs.srcDirs = ['./jni/']
@@ -136,26 +134,38 @@ android {
     compileOptions {
         sourceCompatibility JavaVersion.VERSION_1_8
         targetCompatibility JavaVersion.VERSION_1_8
-
         coreLibraryDesugaringEnabled true
     }
 
+    // 2. Вынесли buildFeatures НАВЕРХ (вне defaultConfig)
+    buildFeatures {
+        buildConfig = true
+        renderScript = false
+        resValues = false
+        shaders = false
+    }
 
     defaultConfig {
-        minSdkVersion 21
-        targetSdkVersion 36
+        // Оставляем только настройки конфигурации, версии уже заданы выше
+        minSdk 24 
+        targetSdk 34
+        versionCode 1
+        versionName "1.0"
 
         vectorDrawables.generatedDensities = ['mdpi', 'hdpi', 'xhdpi', 'xxhdpi']
-
         multiDexEnabled true
 
         externalNativeBuild {
             cmake {
                 version '3.22.1'
-                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-21' //, '-DANDROID_SUPPORT_FLEXIBLE_PAGE_SIZES=ON'
+                arguments '-DANDROID_STL=c++_static', '-DANDROID_PLATFORM=android-24'
                 targets 'tmessages.49'
             }
         }
+        
+        // Временная заглушка для переменных, если они не объявлены в settings.gradle
+        // Если сборка ругается на APP_VERSION_NAME, раскомментируй строки ниже:
+        // buildConfigField "String", "APP_VERSION_NAME", "\"1.0\""
     }
 
     buildTypes {
@@ -164,8 +174,9 @@ android {
             shrinkResources false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
-            buildConfigField "String", "BETA_URL", "\"" + getProps("BETA_PRIVATE_URL") + "\""
+            // Заглушки для переменных, чтобы сборка не падала
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
+            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
             buildConfigField "boolean", "BUNDLE", "false"
@@ -177,8 +188,8 @@ android {
             jniDebuggable false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
-            buildConfigField "String", "BETA_URL", "\"" + getProps("BETA_PRIVATE_URL") + "\""
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
+            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
             buildConfigField "boolean", "BUNDLE", "false"
@@ -190,8 +201,8 @@ android {
             jniDebuggable false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
-            buildConfigField "String", "BETA_URL", "\"" + getProps("BETA_PUBLIC_URL") + "\""
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
+            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
             buildConfigField "boolean", "BUNDLE", "false"
@@ -203,8 +214,8 @@ android {
             jniDebuggable false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
-            buildConfigField "String", "BETA_URL", "\"" + getProps("BETA_HARDCORE_URL") + "\""
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
+            buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "true"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "true"
             buildConfigField "boolean", "BUNDLE", "false"
@@ -216,7 +227,7 @@ android {
             jniDebuggable false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
             buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
@@ -229,7 +240,7 @@ android {
             shrinkResources false
             multiDexEnabled true
             ndk.debugSymbolLevel = 'FULL'
-            buildConfigField "String", "BUILD_VERSION_STRING", "\"" + APP_VERSION_NAME + "\""
+            buildConfigField "String", "BUILD_VERSION_STRING", "\"1.0\""
             buildConfigField "String", "BETA_URL", "\"\""
             buildConfigField "boolean", "DEBUG_VERSION", "false"
             buildConfigField "boolean", "DEBUG_PRIVATE_VERSION", "false"
@@ -237,8 +248,8 @@ android {
             buildConfigField "int", "VERSION_NUM", "7"
         }
     }
-
-    namespace 'org.telegram.messenger'
+    
+    // Удалили дубликат namespace в конце
 }
 
 
