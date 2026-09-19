@@ -29,8 +29,7 @@ dependencies {
 
 android {
     compileSdk 34
-    namespace 'com.pluschat.messenger'
-
+    namespace 'com.pluschat.messenger.huawei'
     compileSdkVersion 36
     buildToolsVersion '36.0.0'
 

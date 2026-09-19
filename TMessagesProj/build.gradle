@@ -105,10 +105,10 @@ dependencies {
 
 android {
     compileSdk 36
-    namespace 'com.pluschat.messenger'
+    namespace 'com.pluschat.messenger.core'
 
     defaultConfig {
-        minSdk 21
+        minSdk 24
         versionCode 490
         versionName "10.5.2"
         

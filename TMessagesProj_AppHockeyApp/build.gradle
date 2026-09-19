@@ -29,8 +29,7 @@ dependencies {
 
 android {
     compileSdk 34
-    namespace 'com.pluschat.messenger'
-
+    namespace 'com.pluschat.messenger.hockey'
     defaultConfig {
         applicationId "com.pluschat.messenger.beta"
         minSdk 21
