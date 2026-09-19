@@ -29,6 +29,9 @@ dependencies {
 }
 
 android {
+    compileSdk 34
+    namespace 'com.pluschat.messenger'
+    
     compileSdkVersion 36
     buildToolsVersion '36.0.0'
 
