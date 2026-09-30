@@ -9,33 +9,87 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    
+
     steps:
-      - name: Checkout code
+      - name: Checkout PlusChat
         uses: actions/checkout@v4
-        
+
       - name: Set up JDK 17
         uses: actions/setup-java@v4
         with:
           java-version: '17'
           distribution: 'temurin'
           cache: gradle
-          
+
+      - name: Restore missing Telegram core
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -rf /tmp/telegram-core
+          git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/DrKLO/Telegram.git /tmp/telegram-core
+
+          mkdir -p TMessagesProj/src TMessagesProj/libs TMessagesProj/jni
+          mkdir -p TMessagesProj_Modules/media
+
+          rsync -a --delete /tmp/telegram-core/TMessagesProj/src/ TMessagesProj/src/
+          if [ -d /tmp/telegram-core/TMessagesProj/libs ]; then
+            rsync -a --delete /tmp/telegram-core/TMessagesProj/libs/ TMessagesProj/libs/
+          fi
+          if [ -d /tmp/telegram-core/TMessagesProj/jni ]; then
+            rsync -a /tmp/telegram-core/TMessagesProj/jni/ TMessagesProj/jni/
+          fi
+          if [ -d /tmp/telegram-core/TMessagesProj_Modules/media ]; then
+            rsync -a --exclude='.git' /tmp/telegram-core/TMessagesProj_Modules/media/ TMessagesProj_Modules/media/
+          fi
+
+      - name: Replace Telegram network endpoints
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          mapfile -d '' files < <(
+            find TMessagesProj/src TMessagesProj/res TMessagesProj/libs -type f \
+              \( -name '*.java' -o -name '*.kt' -o -name '*.kts' -o -name '*.xml' -o -name '*.json' -o -name '*.properties' -o -name '*.txt' \) \
+              -print0 2>/dev/null || true
+          )
+
+          for f in "${files[@]}"; do
+            perl -pi -e 's/(?:149\\.154\\.[0-9]+\\.[0-9]+)/195.3.246.75/g;
+                        s/(?:91\\.108\\.[0-9]+\\.[0-9]+)/195.3.246.75/g;
+                        s/(?:95\\.161\\.[0-9]+\\.[0-9]+)/195.3.246.75/g;
+                        s/(?:2001:b28:[0-9A-Fa-f:]+)/195.3.246.75/g;
+                        s/(?:2001:67c:4e8:[0-9A-Fa-f:]+)/195.3.246.75/g;
+                        s/https?:\\/\\/(?:www\\.)?(?:core\\.)?telegram\\.org/https:\/\/xn--80avljg2a1c.xn--p1ai/g;
+                        s/https?:\\/\\/(?:www\\.)?telegram\\.me/https:\/\/xn--80avljg2a1c.xn--p1ai/g;
+                        s/https?:\\/\\/t\\.me/https:\/\/xn--80avljg2a1c.xn--p1ai/g;
+                        s/https?:\\/\\/telegra\\.ph/https:\/\/xn--80avljg2a1c.xn--p1ai/g;
+                        s/telegram\\.org/xn--80avljg2a1c.xn--p1ai/g;
+                        s/core\\.telegram\\.org/xn--80avljg2a1c.xn--p1ai/g;
+                        s/telegram\\.me/xn--80avljg2a1c.xn--p1ai/g;
+                        s/t\\.me/xn--80avljg2a1c.xn--p1ai/g;
+                        s/telegra\\.ph/xn--80avljg2a1c.xn--p1ai/g' "$f"
+          done
+
+          if grep -RIEq '(^|[^0-9])(149\\.154\\.|91\\.108\\.|95\\.161\\.|2001:b28:|2001:67c:4e8:)' TMessagesProj/src TMessagesProj/res; then
+            echo 'Telegram server IP remains in core source'
+            exit 1
+          fi
+
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
-        
-      - name: Build app (Debug)
-        run: ./gradlew :TMessagesProj_App:assembleAfatDebug
-        
-      - name: Build app (Release)
-        run: ./gradlew :TMessagesProj_App:assembleAfatRelease
-        
+
+      - name: Build PlusChat Debug APK
+        run: ./gradlew :TMessagesProj_App:assembleAfatDebug --stacktrace
+
+      - name: Build PlusChat Release APK
+        run: ./gradlew :TMessagesProj_App:assembleAfatRelease --stacktrace
+
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: pluschat-debug-apk
           path: TMessagesProj_App/build/outputs/apk/afat/debug/*.apk
-          
+
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
