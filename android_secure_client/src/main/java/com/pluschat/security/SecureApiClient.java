@@ -8,7 +8,7 @@ import java.security.spec.X509EncodedKeySpec;
 
 /**
  * Клиент для безопасного общения с ПРОТО-шлюзом.
- * URL: https://proto.pluschat.ru/
+ * URL: https://xn--n1aabel.xn--80avljg2a1c.xn--p1ai/
  */
 public class SecureApiClient {
 

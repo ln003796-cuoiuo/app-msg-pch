@@ -24,20 +24,20 @@ jobs:
       - name: Grant execute permission for gradlew
         run: chmod +x gradlew
         
-      - name: Build with Gradle (Debug)
-        run: ./gradlew assembleDebug
+      - name: Build app (Debug)
+        run: ./gradlew :TMessagesProj_App:assembleAfatDebug
         
-      - name: Build with Gradle (Release)
-        run: ./gradlew assembleRelease
+      - name: Build app (Release)
+        run: ./gradlew :TMessagesProj_App:assembleAfatRelease
         
       - name: Upload Debug APK
         uses: actions/upload-artifact@v4
         with:
           name: pluschat-debug-apk
-          path: TMessagesProj/build/outputs/apk/debug/*.apk
+          path: TMessagesProj_App/build/outputs/apk/afat/debug/*.apk
           
       - name: Upload Release APK
         uses: actions/upload-artifact@v4
         with:
           name: pluschat-release-apk
-          path: TMessagesProj/build/outputs/apk/release/*.apk
+          path: TMessagesProj_App/build/outputs/apk/afat/release/*.apk
