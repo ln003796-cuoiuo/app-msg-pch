@@ -36,12 +36,17 @@ jobs:
           unzip -q /tmp/telegram.zip -d /tmp
           mv /tmp/Telegram-master /tmp/telegram-core
 
-          mkdir -p TMessagesProj/src TMessagesProj/libs
+          mkdir -p TMessagesProj/src TMessagesProj/libs buildSrc TMessagesProj_Modules/media
 
           rsync -a --delete /tmp/telegram-core/TMessagesProj/src/ TMessagesProj/src/
           if [ -d /tmp/telegram-core/TMessagesProj/libs ]; then
             rsync -a --delete /tmp/telegram-core/TMessagesProj/libs/ TMessagesProj/libs/
           fi
+          rsync -a --delete /tmp/telegram-core/buildSrc/ buildSrc/
+
+          rm -rf /tmp/media
+          git clone --depth 1 --branch release https://github.com/Arseny271/media.git /tmp/media
+          rsync -a --delete --exclude='.git' /tmp/media/ TMessagesProj_Modules/media/
 
       - name: Replace Telegram network endpoints
         shell: bash
