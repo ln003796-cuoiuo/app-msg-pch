@@ -29,11 +29,14 @@ jobs:
         shell: bash
         run: |
           set -euo pipefail
-          rm -rf /tmp/telegram-core
-          git clone --depth 1 --filter=blob:none https://github.com/DrKLO/Telegram.git /tmp/telegram-core
+          rm -rf /tmp/telegram-core /tmp/telegram.zip
+          curl --fail --location --retry 3 \
+            https://codeload.github.com/DrKLO/Telegram/zip/refs/heads/master \
+            -o /tmp/telegram.zip
+          unzip -q /tmp/telegram.zip -d /tmp
+          mv /tmp/Telegram-master /tmp/telegram-core
 
-          mkdir -p TMessagesProj/src TMessagesProj/libs TMessagesProj/jni
-          mkdir -p TMessagesProj_Modules/media
+          mkdir -p TMessagesProj/src TMessagesProj/libs
 
           rsync -a --delete /tmp/telegram-core/TMessagesProj/src/ TMessagesProj/src/
           if [ -d /tmp/telegram-core/TMessagesProj/libs ]; then
