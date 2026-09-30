@@ -6,6 +6,10 @@ on:
   pull_request:
     branches: [ main ]
 
+concurrency:
+  group: pluschat-build-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -26,7 +30,7 @@ jobs:
         run: |
           set -euo pipefail
           rm -rf /tmp/telegram-core
-          git clone --depth 1 --recurse-submodules --shallow-submodules https://github.com/DrKLO/Telegram.git /tmp/telegram-core
+          git clone --depth 1 --filter=blob:none https://github.com/DrKLO/Telegram.git /tmp/telegram-core
 
           mkdir -p TMessagesProj/src TMessagesProj/libs TMessagesProj/jni
           mkdir -p TMessagesProj_Modules/media
@@ -34,12 +38,6 @@ jobs:
           rsync -a --delete /tmp/telegram-core/TMessagesProj/src/ TMessagesProj/src/
           if [ -d /tmp/telegram-core/TMessagesProj/libs ]; then
             rsync -a --delete /tmp/telegram-core/TMessagesProj/libs/ TMessagesProj/libs/
-          fi
-          if [ -d /tmp/telegram-core/TMessagesProj/jni ]; then
-            rsync -a /tmp/telegram-core/TMessagesProj/jni/ TMessagesProj/jni/
-          fi
-          if [ -d /tmp/telegram-core/TMessagesProj_Modules/media ]; then
-            rsync -a --exclude='.git' /tmp/telegram-core/TMessagesProj_Modules/media/ TMessagesProj_Modules/media/
           fi
 
       - name: Replace Telegram network endpoints
