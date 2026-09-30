@@ -61,10 +61,10 @@ jobs:
                         s#https?://(?:www\.)?telegram\.me#https://xn--80avljg2a1c.xn--p1ai#g;
                         s#https?://t\.me#https://xn--80avljg2a1c.xn--p1ai#g;
                         s#https?://telegra\.ph#https://xn--80avljg2a1c.xn--p1ai#g;
-                        s/telegram\.org/xn--80avljg2a1c.xn--p1ai/gi;
-                        s/core\.telegram\.org/xn--80avljg2a1c.xn--p1ai/gi;
-                        s/telegram\.me/xn--80avljg2a1c.xn--p1ai/gi;
-                        s/telegra\.ph/xn--80avljg2a1c.xn--p1ai/gi' "$f"
+                        s/(?<![A-Za-z0-9_.-])telegram\.org(?![A-Za-z0-9_.-])/xn--80avljg2a1c.xn--p1ai/gi;
+                        s/(?<![A-Za-z0-9_.-])core\.telegram\.org(?![A-Za-z0-9_.-])/xn--80avljg2a1c.xn--p1ai/gi;
+                        s/(?<![A-Za-z0-9_.-])telegram\.me(?![A-Za-z0-9_.-])/xn--80avljg2a1c.xn--p1ai/gi;
+                        s/(?<![A-Za-z0-9_.-])telegra\.ph(?![A-Za-z0-9_.-])/xn--80avljg2a1c.xn--p1ai/gi' "$f"
           done
 
           echo "Remaining IPv4 literals:"
