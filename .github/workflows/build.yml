@@ -44,9 +44,13 @@ jobs:
           fi
           rsync -a --delete /tmp/telegram-core/buildSrc/ buildSrc/
 
-          rm -rf /tmp/media
-          git clone --depth 1 --branch release https://github.com/Arseny271/media.git /tmp/media
-          rsync -a --delete --exclude='.git' /tmp/media/ TMessagesProj_Modules/media/
+          rm -rf /tmp/media /tmp/media.zip
+          curl --fail --location --retry 3 \
+            https://codeload.github.com/Arseny271/media/zip/c430d207677071b1873f9f18266d55ec45722180 \
+            -o /tmp/media.zip
+          unzip -q /tmp/media.zip -d /tmp
+          mv /tmp/media-c430d207677071b1873f9f18266d55ec45722180 /tmp/media
+          rsync -a --delete /tmp/media/ TMessagesProj_Modules/media/
 
       - name: Replace Telegram network endpoints
         shell: bash
@@ -54,7 +58,7 @@ jobs:
           set -euo pipefail
 
           mapfile -d '' files < <(
-            find TMessagesProj/src TMessagesProj/res TMessagesProj/libs -type f \
+            find TMessagesProj/src TMessagesProj/libs -type f \
               \( -name '*.java' -o -name '*.kt' -o -name '*.kts' -o -name '*.xml' -o -name '*.json' -o -name '*.properties' -o -name '*.txt' \) \
               -print0 2>/dev/null || true
           )
@@ -73,7 +77,7 @@ jobs:
           done
 
           echo "Remaining IPv4 literals:"
-          grep -RhoE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' TMessagesProj/src TMessagesProj/res TMessagesProj/libs 2>/dev/null | sort -u || true
+          grep -RhoE '\b([0-9]{1,3}\.){3}[0-9]{1,3}\b' TMessagesProj/src TMessagesProj/libs 2>/dev/null | sort -u || true
 
           if find TMessagesProj/src TMessagesProj/res -type f \
               \( -name '*.java' -o -name '*.kt' -o -name '*.kts' -o -name '*.xml' -o -name '*.json' -o -name '*.properties' -o -name '*.txt' \) \
